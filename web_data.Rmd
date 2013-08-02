@@ -1,0 +1,56 @@
+
+# Acquiring data from the web 
+
+For this tutorial we will combine data from three separate data repositories. 
+* Open Fisheries - contains landings data.
+* Taxize - 
+* Global Biodiversity Information Facility (gbif)
+
+
+First install some packages
+
+```{r, eval = FALSE}
+install.packages("rgbif")
+install.packages("taxize_")
+install.packages("rfisheries")
+```
+
+```{r, loading, warning = FALSE}
+library(rgbif)
+library(taxize)
+
+```
+
+```{r, fisheries_data, eval = FALSE}
+library(rfisheries)
+# first we acquire a list of species in the database
+species <- species_codes()
+```
+
+```{r, fisheries_data2, eval = TRUE, echo = FALSE}
+library(rfisheries)
+# first we acquire a list of species in the database
+species <- species_codes()
+```
+
+
+```{r, examine_data}
+head(species)
+# Rather than look up data for every single one in this dataset, we'll pick a random sample of 10
+species <- species[sample(nrow(species), 10), ]
+```
+
+# Taxize
+
+#
+```{r, taxize}
+# look up code
+taxon_identifiers <- get_tsn(species[,1])
+# then taxonomic info
+classification_data <- classification(taxon_identifiers)
+```
+# gbif
+```{r, gbif}
+# then locations
+locations <- llply(species[, 1], occurrencelist_many, .progress="text")
+```
